@@ -10,6 +10,7 @@ namespace LeaveManagementSystem.Web.Models.LeaveTypes
 
         [Required]
         [Range(1, 90)]
+        [Display(Name = "Maximum allocation of days")]
         public int NumberOfDays { get; set; }
     }
 }
