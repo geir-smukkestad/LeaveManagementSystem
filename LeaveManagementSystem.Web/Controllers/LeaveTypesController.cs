@@ -15,6 +15,7 @@ namespace LeaveManagementSystem.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private const string _nameExistsValidationMessage = "This leave type already exists in the dabase.";
 
         public LeaveTypesController(ApplicationDbContext context, IMapper mapper)
         {
@@ -71,6 +72,10 @@ namespace LeaveManagementSystem.Web.Controllers
         // @@@@public async Task<IActionResult> Create([Bind("Id,Name,NumberOfDays")] LeaveType leaveType)
         public async Task<IActionResult> Create(LeaveTypeCreateVM leaveTypeCreate)
         {
+            if (await CheckIfLeaveTypeNameExists(leaveTypeCreate.Name))
+            {
+                ModelState.AddModelError(nameof(leaveTypeCreate.Name), _nameExistsValidationMessage);
+            }
 #if false
             // Adding custom validation logic
             if (leaveTypeCreate.Name.Contains("vacation"))
@@ -116,6 +121,11 @@ namespace LeaveManagementSystem.Web.Controllers
             if (id != leaveTypeEdit.Id)
             {
                 return NotFound();
+            }
+
+            if (await CheckIfLeaveTypeNameExistsForEdit(leaveTypeEdit))
+            {
+                ModelState.AddModelError(nameof(leaveTypeEdit.Name), _nameExistsValidationMessage);
             }
 
             if (ModelState.IsValid)
@@ -174,6 +184,18 @@ namespace LeaveManagementSystem.Web.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<bool> CheckIfLeaveTypeNameExists(string name)
+        {
+            var lowerCaseName = name.ToLower();
+            return await _context.LeaveTypes.AnyAsync(q => q.Name.ToLower().Equals(lowerCaseName));
+        }
+
+        private async Task<bool> CheckIfLeaveTypeNameExistsForEdit(LeaveTypeEditVM leaveType)
+        {
+            var lowerCaseName = leaveType.Name.ToLower();
+            return await _context.LeaveTypes.AnyAsync(q => q.Name.ToLower().Equals(lowerCaseName) && q.Id != leaveType.Id);
         }
 
         private bool LeaveTypeExists(int id)
