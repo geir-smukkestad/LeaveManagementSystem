@@ -65,5 +65,7 @@ namespace LeaveManagementSystem.Web.Data
         }
 
         public DbSet<LeaveType> LeaveTypes { get; set; } = default!;
+        public DbSet<LeaveAllocation> LeaveAllocations { get; set; } = default!;
+        public DbSet<Period> Periods { get; set; } = default!;
     }
 }
