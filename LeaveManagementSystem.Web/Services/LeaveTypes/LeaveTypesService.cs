@@ -67,5 +67,11 @@ namespace LeaveManagementSystem.Web.Services.LeaveTypes
         {
             return _context.LeaveTypes.Any(e => e.Id == id);
         }
+
+        public async Task<bool> DaysExceedMaximum(int leaveTypeId, int days)
+        {
+            var leaveType = await _context.LeaveTypes.FindAsync(leaveTypeId);
+            return leaveType != null && days > leaveType.NumberOfDays;
+        }
     }
 }

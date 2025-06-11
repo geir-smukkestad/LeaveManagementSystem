@@ -12,5 +12,6 @@ namespace LeaveManagementSystem.Web.Services.LeaveTypes
         Task<bool> CheckIfLeaveTypeNameExistsForEdit(LeaveTypeEditVM leaveType);
         bool LeaveTypeExists(int id);
         Task Remove(int id);
+        Task<bool> DaysExceedMaximum(int leaveTypeId, int days);
     }
 }
