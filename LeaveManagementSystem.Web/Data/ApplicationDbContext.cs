@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LeaveManagementSystem.Web.Data.Configurations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace LeaveManagementSystem.Web.Data
 {
@@ -15,57 +17,21 @@ namespace LeaveManagementSystem.Web.Data
         {
             base.OnModelCreating(builder);
 
-            // Seed default roles and user
-            builder.Entity<IdentityRole>().HasData(
-                new IdentityRole
-                {
-                    Id = "17104DE5-BE3E-4860-A8F2-DE664A5D2D28",
-                    Name = "Employee",
-                    NormalizedName = "EMPLOYEE"
-                },
-                new IdentityRole
-                {
-                    Id = "0328D8E9-1801-4752-8C5B-9E1737FC94D4",
-                    Name = "Supervisor",
-                    NormalizedName = "SUPERVISOR"
-                },
-                new IdentityRole
-                {
-                    Id = "2C02596C-1392-41CE-9A2E-B131D33A2204",
-                    Name = "Administrator",
-                    NormalizedName = "ADMINISTRATOR"
-                }
-            );
+#if true // Simpler way to apply configurations
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            var hasher = new PasswordHasher<ApplicationUser>();
-
-            builder.Entity<ApplicationUser>().HasData(
-                new ApplicationUser
-                {
-                    Id = "5BE043C0-704E-481E-8FDC-F517E78BD469",
-                    Email = "admin@localhost.com",
-                    NormalizedEmail = "ADMIN@LOCALHOST.COM",
-                    NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                    UserName = "admin@localhost.com",
-                    PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true,
-                    FirstName = "Default",
-                    LastName = "Admin",
-                    DateOfBirth = new DateOnly(1990, 1, 1)
-                }
-            );
-
-            builder.Entity<IdentityUserRole<string>>().HasData(
-                new IdentityUserRole<string>
-                {
-                    UserId = "5BE043C0-704E-481E-8FDC-F517E78BD469",
-                    RoleId = "2C02596C-1392-41CE-9A2E-B131D33A2204"
-                }
-            );
+#else
+            builder.ApplyConfiguration(new LeaveRequestStatusConfiguration());
+            builder.ApplyConfiguration(new IdentityRoleConfiguration());
+            builder.ApplyConfiguration(new ApplicationUserConfiguration());
+            builder.ApplyConfiguration(new IdentityUserRoleConfiguration());
+#endif
         }
 
         public DbSet<LeaveType> LeaveTypes { get; set; } = default!;
         public DbSet<LeaveAllocation> LeaveAllocations { get; set; } = default!;
         public DbSet<Period> Periods { get; set; } = default!;
+        public DbSet<LeaveRequestStatus> LeaveRequestStatuses { get; set; } = default!;
+        public DbSet<LeaveRequest> LeaveRequests { get; set; } = default!;
     }
 }
