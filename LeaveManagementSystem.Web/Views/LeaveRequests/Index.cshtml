@@ -1,0 +1,83 @@
+﻿@using LeaveManagementSystem.Web.Services.LeaveRequests
+@model IEnumerable<LeaveRequestReadOnlyVM>
+
+@{
+    ViewData["Title"] = "Leave Request List";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Request Leave</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveRequestStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var className = string.Empty;
+            if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Pending)
+            {
+                className = "warning";
+            }
+            else if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Approved)
+            {
+                className = "success";
+            }
+            else if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Declined)
+            {
+                className = "danger";
+            }
+            else if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Canceled)
+            {
+                className = "dark";
+            }
+
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LeaveType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberOfDays)
+                </td>
+                <td>
+                    <span class="badge rounded-pill bg-@className">@item.LeaveRequestStatus.ToString()</span>
+                </td>
+                <td>
+                    @if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Pending)
+                    {
+                        <form asp-action="Cancel">
+                            <input type="hidden" asp-for="@item.Id" name="id"/>  <!-- bind to the name id in order for it to match the name in the controller's create action -->
+                            <input class="btn btn-danger" type="submit" value="Cancel"/>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
