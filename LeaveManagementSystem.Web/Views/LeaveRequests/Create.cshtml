@@ -44,4 +44,19 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $( function() {
+            $( "#StartDate" ).datepicker({
+                dateFormat: 'dd.mm.yy',
+                changeMonth: true,
+                changeYear: true,
+            });
+            $( "#EndDate" ).datepicker({
+                dateFormat: 'dd.mm.yy',
+                changeMonth: true,
+                changeYear: true,
+            });
+        } );
+    </script>
 }
