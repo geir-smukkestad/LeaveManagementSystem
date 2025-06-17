@@ -5,7 +5,7 @@
     ViewData["Title"] = "Leave Request List";
 }
 
-<h1>Index</h1>
+<h1>Reviewing Your Leave Requests</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Request Leave</a>
@@ -71,13 +71,41 @@
                 <td>
                     @if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Pending)
                     {
-                        <form asp-action="Cancel">
-                            <input type="hidden" asp-for="@item.Id" name="id"/>  <!-- bind to the name id in order for it to match the name in the controller's create action -->
-                            <input class="btn btn-danger" type="submit" value="Cancel"/>
-                        </form>
+                        <button data-id="@item.Id" class="btn btn-danger cancelBtn">Cancel</button>
                     }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<form id="cancelForm" asp-action="Cancel">
+    <input type="hidden" name="id" id="leaveRequestId" />  <!-- bind to the name id in order for it to match the name in the controller's create action -->
+</form>
+
+@section Scripts {
+    <script>
+        $(function()
+        {
+            $('.cancelBtn').click(
+                function (e)
+                {
+                    var btn = $(this);
+                    swal({
+                        title: "Are you sure?",
+                        text: "Are you sure you want to cancel this leave request?",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
+                    }).then(function (confirm) {  // Avoid arrow function
+                        if (confirm) {                        
+                            var id = btn.data("id");
+                            $('#leaveRequestId').val(id);
+                            $('#cancelForm').submit();
+                        }
+                    });
+                }
+            );
+        } );
+    </script>
+}

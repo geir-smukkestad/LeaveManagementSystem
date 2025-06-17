@@ -67,19 +67,27 @@ namespace LeaveManagementSystem.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Admin/Supe review requests
+        // @@@@@@@@@@@ [Authorize(Policy = "AdminSupervisorOnly")]
+        public async Task<IActionResult> ListRequests()
+        {
+            var model = await _leaveRequestsService.AdminGetAllLeaveRequests();
+            return View(model);
+        }
+
         // Admin/supervisor review requests
         public async Task<IActionResult> Review(int id)
         {
-
-
-            return View();
+            var model = await _leaveRequestsService.GetLeaveRequestForReview(id);
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Review(/* Use VM */)
+        public async Task<IActionResult> Review(int id, bool approved)
         {
-            return View();
+            await _leaveRequestsService.ReviewLeaveRequest(id, approved);
+            return RedirectToAction(nameof(ListRequests));
         }
     }
 }
