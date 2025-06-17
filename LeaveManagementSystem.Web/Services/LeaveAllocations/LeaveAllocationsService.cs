@@ -29,14 +29,9 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 .ToListAsync();
 
             // Get the current period based on the year (assuming a period starts at the beginning of the year and ends at the end of the year)
-#if true
             var period = await _periodsService.GetCurrentPeriod();
             var monthsRemaining = period.EndDate.Month - DateTime.Now.Month;
-#else
-            var currentDate = DateTime.Now;
-            var period = await _context.Periods.SingleAsync(p => p.EndDate.Year == currentDate.Year);
-            var monthsRemaining = period.EndDate.Month - currentDate.Month;
-#endif
+
             // for each leave type, create a new allocation for the employee
             foreach (var leaveType in leaveTypes)
             {
@@ -124,22 +119,12 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
         private async Task<List<LeaveAllocation>> GetAllocations(string userId)
         {
-            var currentDate = DateTime.Now;
-#if true
             var period = await _periodsService.GetCurrentPeriod();
             var allocations = await _context.LeaveAllocations
                 .Include(x => x.LeaveType) // Include navigation property for LeaveType
                 .Include(x => x.Period) // Include navigation property for Period
                 .Where(x => x.EmployeeId == userId && x.PeriodId == period.Id)
                 .ToListAsync();
-#else // Alternative approach using SingleAsync to get the period that matches the current year
-            var period = await _context.Periods.SingleAsync(p => p.EndDate.Year == currentDate.Year);
-            var allocations = await _context.LeaveAllocations
-                .Include(x => x.LeaveType) // Include navigation property for LeaveType
-                .Include(x => x.Period) // Include navigation property for Period
-                .Where(x => x.EmployeeId == user.Id && x.Period.Id == period.Id)
-                .ToListAsync();
-#endif
             return allocations;
         }
 

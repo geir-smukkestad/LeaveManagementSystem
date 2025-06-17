@@ -26,17 +26,9 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             var leaveRequest = _context.LeaveRequests.Find(leaveRequestId);
             leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatusEnum.Canceled;
 
-#if true
             // Restore allocation days
             await UpdateAllocationDays(leaveRequest, false);
-#else
-            var currentDate = DateTime.Now;
-            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
-            var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
-            var allocationToRefund = await _context.LeaveAllocations.FirstAsync(q => q.EmployeeId == leaveRequest.EmployeeId &&
-                q.LeaveTypeId == leaveRequest.LeaveTypeId && q.PeriodId == period.Id);
-            allocationToRefund.Days += numberOfDays;
-#endif
+
             await _context.SaveChangesAsync();
         }
 
@@ -51,17 +43,8 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             _context.LeaveRequests.Add(leaveRequest);
 
             // Deduct allocated leave days from the employee's leave type balance
-#if true
             await UpdateAllocationDays(leaveRequest, true);
-#else
-            var currentDate = DateTime.Now;
-            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
 
-            var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
-            // var allocationToDeduct = await _context.LeaveAllocations.FirstAsync(q => q.EmployeeId == user.Id && q.LeaveTypeId == model.LeaveTypeId);
-            var allocationToDeduct = await _context.LeaveAllocations.FirstAsync(q => q.PeriodId == period.Id && q.EmployeeId == user.Id && q.LeaveTypeId == model.LeaveTypeId);
-            allocationToDeduct.Days -= numberOfDays;
-#endif
             await _context.SaveChangesAsync();
         }
 
@@ -167,16 +150,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
 
             if (!approved)
             {
-#if true
                 UpdateAllocationDays(leaveRequest, false);
-#else
-                var currentDate = DateTime.Now;
-                var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
-                var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
-                var allocationToRefund = await _context.LeaveAllocations.FirstAsync(q => q.EmployeeId == leaveRequest.EmployeeId &&
-                    q.LeaveTypeId == leaveRequest.LeaveTypeId && q.PeriodId == period.Id);
-                allocationToRefund.Days += numberOfDays;
-#endif
             }
 
             await _context.SaveChangesAsync();
