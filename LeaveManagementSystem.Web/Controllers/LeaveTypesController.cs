@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using LeaveManagementSystem.Web.Data;
-using LeaveManagementSystem.Web.Models.LeaveTypes;
-using AutoMapper;
+﻿using LeaveManagementSystem.Application.Services.LeaveTypes;
 using Microsoft.AspNetCore.Authorization;
-using LeaveManagementSystem.Web.Services.LeaveTypes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Controllers
 {
@@ -92,7 +84,7 @@ namespace LeaveManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var leaveType =  await _leaveTypesService.Get<LeaveTypeEditVM>(id.Value);
+            var leaveType = await _leaveTypesService.Get<LeaveTypeEditVM>(id.Value);
             if (leaveType == null)
             {
                 return NotFound();
@@ -162,6 +154,6 @@ namespace LeaveManagementSystem.Web.Controllers
         {
             await _leaveTypesService.Remove(id);
             return RedirectToAction(nameof(Index));
-        }        
+        }
     }
 }
