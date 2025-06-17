@@ -68,7 +68,7 @@ namespace LeaveManagementSystem.Web.Controllers
         }
 
         // Admin/Supe review requests
-        // @@@@@@@@@@@ [Authorize(Policy = "AdminSupervisorOnly")]
+        [Authorize(Policy = "AdminSupervisorOnly")]
         public async Task<IActionResult> ListRequests()
         {
             var model = await _leaveRequestsService.AdminGetAllLeaveRequests();

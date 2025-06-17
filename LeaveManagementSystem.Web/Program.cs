@@ -25,6 +25,14 @@ builder.Services.AddScoped<IPeriodsService, PeriodsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminSupervisorOnly", policy =>
+    {
+        policy.RequireRole(Roles.Administrator, Roles.Supervisor); // One or the other. But adding a new RequireRole below would require both this and the second one.
+    });
+});
+
 builder.Services.AddHttpContextAccessor(); // To be able to inject IHttpContextAccessor in services
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
