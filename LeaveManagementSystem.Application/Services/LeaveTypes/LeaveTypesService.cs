@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace LeaveManagementSystem.Application.Services.LeaveTypes
 {
-    public class LeaveTypesService(ApplicationDbContext context, IMapper mapper) : ILeaveTypesService
+    public class LeaveTypesService(ApplicationDbContext context, IMapper mapper, ILogger<LeaveTypesService> logger) : ILeaveTypesService
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<LeaveTypesService> _logger = logger;
 
         public async Task<List<LeaveTypeReadOnlyVM>> GetAll()
         {
@@ -44,6 +46,8 @@ namespace LeaveManagementSystem.Application.Services.LeaveTypes
 
         public async Task Create(LeaveTypeCreateVM model)
         {
+            _logger.LogInformation("Creating a new leave type with name: {Name} - {Days}", model.Name, model.NumberOfDays);
+
             var leaveType = _mapper.Map<LeaveType>(model);
             _context.Add(leaveType);
             await _context.SaveChangesAsync();

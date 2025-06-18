@@ -6,14 +6,17 @@ using Microsoft.EntityFrameworkCore;
 namespace LeaveManagementSystem.Web.Controllers
 {
     [Authorize(Roles = Roles.Administrator)]
-    public class LeaveTypesController(ILeaveTypesService leaveTypesService) : Controller
+    public class LeaveTypesController(ILeaveTypesService leaveTypesService, ILogger<LeaveTypesController> logger) : Controller
     {
         private const string _nameExistsValidationMessage = "This leave type already exists in the dabase.";
         private ILeaveTypesService _leaveTypesService = leaveTypesService;
+        private readonly ILogger<LeaveTypesController> _logger = logger;
 
         // GET: LeaveTypes
         public async Task<IActionResult> Index()
         {
+            _logger.LogInformation("Loading leave types.");
+
 #if true // Use AutoMapper to perform automatic mapping from LeaveType to IndexVM
             var viewData = await _leaveTypesService.GetAll();
 #else
@@ -69,10 +72,13 @@ namespace LeaveManagementSystem.Web.Controllers
             }
 #endif
             if (ModelState.IsValid)
-            {
+            {                
                 await _leaveTypesService.Create(leaveTypeCreate);
                 return RedirectToAction(nameof(Index));
             }
+
+            _logger.LogWarning("Failed creating leave type {Name}.", leaveTypeCreate.Name);
+
             return View(leaveTypeCreate);
         }
 
